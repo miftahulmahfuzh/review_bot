@@ -95,15 +95,21 @@ To deploy the UI (depends on the API):
 The following endpoints are available in this chatbot:
 
 1. **POST `/ask`**
+
    **Description:** Responds to user inquiries related to Spotify reviews.
+
    **Input:** JSON object with `user_input` (text).
+
    **Example Input:**
+
    ```json
    {
      "user_input": "In comparison to our application, which music streaming platform are users most likely to compare ours with?"
    }
    ```
+
    **Example Output:**
+
    ```json
    {
      "response": "Users are most likely to compare our application with Pandora."
@@ -111,9 +117,13 @@ The following endpoints are available in this chatbot:
    ```
 
 2. **PUT `/review/<review_id>`**
+
    **Description:** Inserts a review item into the Qdrant collection.
+
    **Input:** JSON dictionary with review details.
+
    **Example Input:**
+
    ```json
    {
      "_id": 0,
@@ -127,7 +137,9 @@ The following endpoints are available in this chatbot:
      "review_timestamp": "2014-05-27 14:21:48"
    }
    ```
+
    **Example Output:**
+
    ```json
    {
      "status": "item id 19206 is inserted into spotify_review"
@@ -135,8 +147,11 @@ The following endpoints are available in this chatbot:
    ```
 
 3. **DELETE `/review/<item_id>`**
+
    **Description:** Deletes a review item from the Qdrant collection based on the item ID.
+
    **Example Output:**
+
    ```json
    {
      "status": "item id 19206 is deleted from spotify_review"
@@ -144,8 +159,11 @@ The following endpoints are available in this chatbot:
    ```
 
 4. **GET `/collections`**
+
    **Description:** Lists all available collections in Qdrant.
+
    **Example Output:**
+
    ```json
    {
      "result": [
@@ -158,8 +176,11 @@ The following endpoints are available in this chatbot:
    ```
 
 5. **GET `/healthcheck`**
+
    **Description:** Verifies if the API is running.
+
    **Example Output:**
+
    ```json
    {
      "status": "ok"
