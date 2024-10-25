@@ -1,17 +1,17 @@
-from typing import Annotated
 from typing_extensions import TypedDict
+from typing import Annotated
 
-from langchain.prompts import ChatPromptTemplate
-from langchain_openai import AzureChatOpenAI
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
+from langchain.prompts import ChatPromptTemplate
+from langchain_openai import AzureChatOpenAI
 from qdrant_client import QdrantClient
-import  openai
 import tiktoken
+import openai
 
-from app.log import logger
-from app.config import settings
 from app.core.utils import get_embedding
+from app.config import settings
+from app.log import logger
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
@@ -50,7 +50,7 @@ class ReviewChatbot:
         def chatbot(state: State):
             query = state["messages"][-1].content
             response = self._find_contextual_response(query)
-            is_irrelevant = "this question is irrelevant" in response
+            is_irrelevant = "this question is irrelevant" in response.lower()
             score = 1
             if not is_irrelevant:
                 score = self._calculate_response_score(response, query, self._last_context)
