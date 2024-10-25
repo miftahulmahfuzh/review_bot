@@ -207,7 +207,7 @@ The following endpoints are available in this chatbot:
    }
    ```
 
-To test these endpoints, open Swagger UI: http://localhost:<API_PORT>/docs in your browser.
+To test these endpoints, open Swagger UI: `http://localhost:<API_PORT>/docs` in your browser.
 
 ---
 
