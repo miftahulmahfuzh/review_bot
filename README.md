@@ -33,35 +33,35 @@ poetry install
 The knowledge base is powered by Qdrant as the vector database, which stores the semantic embeddings of review texts.
 
 - **Vector Database:**
-    
+
   [Qdrant](https://qdrant.tech/documentation/quickstart) serves as the vector database for this chatbot. To deploy Qdrant, run:
-  
+
   ```bash
   docker-compose -f docker-compose-qdrant.yml up
   ```
 
 - **Embedding Model:**
-  We use [TinyBERT](https://huggingface.co/cross-encoder/ms-marco-TinyBERT-L-2-v2) for semantic representation of review texts. TinyBERT is served with Huggingface’s Optimum ONNX and transformed into vector representations using Transformers' `feature-extraction` pipeline.
+  We use [TinyBERT](https://huggingface.co/cross-encoder/ms-marco-TinyBERT-L-2-v2) for semantic representation of review texts. TinyBERT is served with Huggingface’s [Optimum ONNX](https://huggingface.co/docs/optimum/v1.2.1/en/onnxruntime/modeling_ort) and transformed into vector representations using Transformers' `feature-extraction` pipeline.
 
   To deploy TinyBERT:
-  
+
   1. **Build Optimum ONNX Serving Image:**
-  
+
      ```bash
      cd tinybert/serving
      docker build -t optimum-onnx-serving-cpu:0.1.2 .
      ```
-     
+
   2. **Update `model.onnx` Path in Docker Compose Volumes**
-  
+
      Example:
-     
+
      ```yaml
      - /home/miftah/Downloads/job_application/mekari/review_bot/tinybert:/app/models
      ```
-     
+
   3. **Start the TinyBERT Docker Compose:**
-  
+
      ```bash
      docker-compose up
      ```

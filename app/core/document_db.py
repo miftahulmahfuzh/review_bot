@@ -63,16 +63,6 @@ class QDrantDB(DocumentDB):
         result = {"status": f"item id {item_id} is deleted from {collection_name}"}
         return result
 
-    def search(self, embedding, collection_name: str) -> List[ScoredPoint]:
-        docs = self.client.search(
-            collection_name=collection_name,
-            query_vector=embedding,
-            limit=settings.TOPN,
-        )
-        if not docs:
-            return []
-        return docs
-
     def knowledges(self) -> Knowledges:
         knowledges = []
         for collection in self.client.get_collections().collections:
