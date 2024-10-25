@@ -14,6 +14,7 @@ class Config(BaseSettings):
 
     EMBEDDING_SERVING_URL: str = "http://10.181.131.244:8899/forward"
     CACHE_QUERY_EMBEDDING: bool = True
+    CACHE_DIR: Path = ".cache"
     VECTOR_SIZE: int = 1024
 
     API_KEY: SecretStr = "ebce2698dadf0593c979a2798c84e49a0"
@@ -41,6 +42,6 @@ __import__("pprint").pprint(settings.__dict__)
 
 if settings.CACHE_QUERY_EMBEDDING:
     try:
-        os.mkdir(".cache")
+        os.mkdir(settings.CACHE_DIR)
     except FileExistsError:
         pass

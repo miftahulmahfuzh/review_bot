@@ -24,8 +24,8 @@ def vector(text):
 def get_embedding(text: str):
     if settings.CACHE_QUERY_EMBEDDING:
         cache_key = hashlib.md5(text.strip().encode()).hexdigest()
-        if cache_key in os.listdir(".cache"):
-            with open(f".cache/{cache_key}", "rb") as f:
+        if cache_key in os.listdir(settings.CACHE_DIR):
+            with open(f"{settings.CACHE_DIR}/{cache_key}", "rb") as f:
                 # logger.info("use cached embedding")
                 return pickle.load(f)
 
@@ -34,7 +34,7 @@ def get_embedding(text: str):
 
     if settings.CACHE_QUERY_EMBEDDING:
         cache_key = hashlib.md5(text.strip().encode()).hexdigest()
-        with open(f".cache/{cache_key}", "wb") as f:
+        with open(f"{settings.CACHE_DIR}/{cache_key}", "wb") as f:
             pickle.dump(embedding, f, protocol=pickle.HIGHEST_PROTOCOL)
 
     return embedding

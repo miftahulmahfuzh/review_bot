@@ -75,6 +75,7 @@ Once Qdrant and TinyBERT are deployed successfully, load the dataset:
 3. Run the data loading script:
 
    ```bash
+   cd qdrant_scripts
    poetry run python load_data.py
    ```
 
