@@ -5,7 +5,7 @@
 
 This repository provides a Spotify review chatbot, built to analyze and answer user inquiries based on Spotify's Google Play Store reviews.
 
-**Dataset:**  
+**Dataset:**
 The full dataset for this project is available on Kaggle: [3.4 Million Spotify Google Store Reviews](https://www.kaggle.com/datasets/bwandowando/3-4-million-spotify-google-store-reviews).
 
 ## Requirements
@@ -31,13 +31,13 @@ poetry install
 
 The knowledge base is powered by Qdrant as the vector database, which stores the semantic embeddings of review texts.
 
-- **Vector Database:**  
+- **Vector Database:**
   [Qdrant](https://qdrant.tech/documentation/quickstart) serves as the vector database for this chatbot. To deploy Qdrant, run:
   ```bash
   docker-compose -f docker-compose-qdrant.yml up
   ```
 
-- **Embedding Model:**  
+- **Embedding Model:**
   We use [TinyBERT](https://huggingface.co/cross-encoder/ms-marco-TinyBERT-L-2-v2) for semantic representation of review texts. TinyBERT is served with Huggingface’s Optimum ONNX and transformed into vector representations using Transformers' `feature-extraction` pipeline.
 
   To deploy TinyBERT:
@@ -46,7 +46,7 @@ The knowledge base is powered by Qdrant as the vector database, which stores the
      cd tinybert/serving
      docker build -t optimum-onnx-serving-cpu:0.1.2 .
      ```
-  2. **Update `model.onnx` Path in Docker Compose Volumes**  
+  2. **Update `model.onnx` Path in Docker Compose Volumes**
      Example:
      ```yaml
      - /home/miftah/Downloads/job_application/mekari/review_bot/tinybert:/app/models
@@ -94,9 +94,9 @@ To deploy the UI (depends on the API):
 
 The following endpoints are available in this chatbot:
 
-1. **POST `/ask`**  
-   **Description:** Responds to user inquiries related to Spotify reviews.  
-   **Input:** JSON object with `user_input` (text).  
+1. **POST `/ask`**
+   **Description:** Responds to user inquiries related to Spotify reviews.
+   **Input:** JSON object with `user_input` (text).
    **Example Input:**
    ```json
    {
@@ -110,9 +110,9 @@ The following endpoints are available in this chatbot:
    }
    ```
 
-2. **PUT `/review/<review_id>`**  
-   **Description:** Inserts a review item into the Qdrant collection.  
-   **Input:** JSON dictionary with review details.  
+2. **PUT `/review/<review_id>`**
+   **Description:** Inserts a review item into the Qdrant collection.
+   **Input:** JSON dictionary with review details.
    **Example Input:**
    ```json
    {
@@ -134,8 +134,8 @@ The following endpoints are available in this chatbot:
    }
    ```
 
-3. **DELETE `/review/<item_id>`**  
-   **Description:** Deletes a review item from the Qdrant collection based on the item ID.  
+3. **DELETE `/review/<item_id>`**
+   **Description:** Deletes a review item from the Qdrant collection based on the item ID.
    **Example Output:**
    ```json
    {
@@ -143,8 +143,8 @@ The following endpoints are available in this chatbot:
    }
    ```
 
-4. **GET `/collections`**  
-   **Description:** Lists all available collections in Qdrant.  
+4. **GET `/collections`**
+   **Description:** Lists all available collections in Qdrant.
    **Example Output:**
    ```json
    {
@@ -157,8 +157,8 @@ The following endpoints are available in this chatbot:
    }
    ```
 
-5. **GET `/healthcheck`**  
-   **Description:** Verifies if the API is running.  
+5. **GET `/healthcheck`**
+   **Description:** Verifies if the API is running.
    **Example Output:**
    ```json
    {
@@ -166,8 +166,8 @@ The following endpoints are available in this chatbot:
    }
    ```
 
-To test these endpoints, open [Swagger UI](http://localhost:<API_PORT>/docs) in your browser.
+To test these endpoints, open Swagger UI: http://localhost:<API_PORT>/docs in your browser.
 
---- 
+---
 
 
