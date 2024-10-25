@@ -23,10 +23,10 @@ class Config(BaseSettings):
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8092
 
-    AZURE_ENDPOINT: str
-    AZURE_API_KEY: str
-    AZURE_API_VERSION: str
-    AZURE_DEPLOYMENT_NAME: str
+    AZURE_ENDPOINT: SecretStr
+    AZURE_API_KEY: SecretStr
+    AZURE_API_VERSION: SecretStr
+    AZURE_DEPLOYMENT_NAME: SecretStr
     TEMPERATURE: float
 
     class Config:

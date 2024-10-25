@@ -1,16 +1,14 @@
-from langchain.prompts import ChatPromptTemplate
-from langchain_openai import AzureChatOpenAI
 from typing import Annotated
 from typing_extensions import TypedDict
+
+from langchain.prompts import ChatPromptTemplate
+from langchain_openai import AzureChatOpenAI
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from qdrant_client import QdrantClient
-import hashlib
-import json
-import os
-import pickle
-import requests
+
 from app.config import settings
+from app.core.utils import get_embedding
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
@@ -18,10 +16,10 @@ class State(TypedDict):
 class ReviewChatbot:
     def __init__(self):
         self.llm = AzureChatOpenAI(
-            azure_endpoint=settings.AZURE_ENDPOINT,
-            openai_api_key=settings.AZURE_API_KEY,
-            openai_api_version=settings.AZURE_API_VERSION,
-            azure_deployment=settings.AZURE_DEPLOYMENT_NAME,
+            azure_endpoint=settings.AZURE_ENDPOINT.get_secret_value(),
+            openai_api_key=settings.AZURE_API_KEY.get_secret_value(),
+            openai_api_version=settings.AZURE_API_VERSION.get_secret_value(),
+            azure_deployment=settings.AZURE_DEPLOYMENT_NAME.get_secret_value(),
             temperature=settings.TEMPERATURE,
         )
         self.qdrant_client = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
@@ -31,6 +29,7 @@ class ReviewChatbot:
         self.qa_prompt = ChatPromptTemplate.from_messages([
             ("system", """You are a helpful AI assistant that provides summary answer based on a context in the form of a collection of spotify reviews.
             each row represents a single review
+            If user's question does not relate to spotify's review, respond with 'this question is irrelevant to spotify reviews analysis'
             If the collection of reviews is not relevant or doesn't contain the information needed to answer the question, respond with 'NO_ANSWER'.
             If the collection of reviews is relevant, provide a concise answer based on it."""),
             ("human", "Reviews:\n{context}\n\nQuestion: {question}")
@@ -67,12 +66,13 @@ class ReviewChatbot:
         )
         text = ""
         iid = 0
-        contexts = []
+        reviews = []
         for result in results:
             r = result.payload
             text = r['review_text']
-            contexts.append(text)
-        text = "\n".join(contexts)
+            reviews.append(text)
+        print(f"TOTAL REVIEWS: {len(reviews)}")
+        text = "\n".join(reviews)
         return text
 
     def _get_llm_response(self, context: str, query: str):
@@ -99,25 +99,6 @@ class ReviewChatbot:
                 print("Goodbye!")
                 break
             self.stream_graph_updates(user_input)
-
-def vector(text):
-    headers = {"content-type": "application/json"}
-    data = {"inputs": [text]}
-    r = requests.post(settings.EMBEDDING_SERVING_URL, data=json.dumps(data), headers=headers)
-    return r.json()["output"][0]
-
-def get_embedding(text: str):
-    cache_key = hashlib.md5(text.strip().encode()).hexdigest()
-    os.makedirs(".cache", exist_ok=True)
-    cache_path = f".cache/{cache_key}"
-    if os.path.exists(cache_path):
-        with open(cache_path, "rb") as f:
-            return pickle.load(f)
-
-    embedding = vector(text)
-    with open(cache_path, "wb") as f:
-        pickle.dump(embedding, f, protocol=pickle.HIGHEST_PROTOCOL)
-    return embedding
 
 # Instantiate and run ReviewChatbot
 review_chatbot = ReviewChatbot()
