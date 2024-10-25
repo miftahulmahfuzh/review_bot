@@ -103,7 +103,7 @@ To deploy the chatbot API:
 
 ### Deploy Streamlit UI
 
-To deploy the UI (Chatbot API has to be deployed beforehand):
+To deploy the UI (Chatbot API has to be deployed first):
 
 ```bash
 ./scripts/run_ui.sh
