@@ -6,6 +6,7 @@ class AskInput(BaseModel):
 
 class AskOutput(BaseModel):
     response: str
+    score: float
 
 class Review(BaseModel):
     _id: int

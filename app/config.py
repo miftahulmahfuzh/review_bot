@@ -28,6 +28,7 @@ class Config(BaseSettings):
     TEMPERATURE: float
 
     SYSTEM_DESCRIPTION: Path = "config/system_description.txt"
+    SCORING_SYSTEM_DESCRIPTION: Path = "config/scoring_system_description.txt"
 
     class Config:
         env_file = ".env"

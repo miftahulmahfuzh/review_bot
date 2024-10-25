@@ -24,8 +24,7 @@ def verify_api_key(x_api_key: str = Header(...)):
           summary="Ask the chatbot a question",
           description="Endpoint to ask a question to the chatbot")
 def ask(payload: schema.AskInput):
-    response = review_chatbot.ask(payload.user_input)
-    result = {"response": response}
+    result = review_chatbot.ask(payload.user_input)
     return schema.AskOutput(**result)
 
 @app.put("/review/{item_id}",

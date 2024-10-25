@@ -15,6 +15,7 @@ from app.core.utils import get_embedding
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
+    scores: Annotated[list[float], "Scores for responses"]
 
 class ReviewChatbot:
     def __init__(self):
@@ -34,7 +35,13 @@ class ReviewChatbot:
             ("system", self.system_desc),
             ("human", "Reviews:\n{context}\n\nQuestion: {question}")
         ])
-        # Initialize tokenizer for GPT-4
+        scoring_system_desc = open(settings.SCORING_SYSTEM_DESCRIPTION).read()
+        self.scoring_prompt = ChatPromptTemplate.from_messages([
+            ("system", scoring_system_desc),
+            ("human", "Reviews:\n{context}\n\nQuestion: {question}\nAnswer: {response}")
+        ])
+        self._last_context = ""
+
         self.tokenizer = tiktoken.encoding_for_model("gpt-4")
         self.max_tokens = 8192  # GPT-4's maximum context length
         self.max_response_tokens = 500  # Reserve tokens for the response
@@ -43,7 +50,12 @@ class ReviewChatbot:
         def chatbot(state: State):
             query = state["messages"][-1].content
             response = self._find_contextual_response(query)
-            return {"messages": [response]}
+            is_irrelevant = "this question is irrelevant" in response
+            score = 1
+            if not is_irrelevant:
+                score = self._calculate_response_score(response, query, self._last_context)
+            logger.info(f"Response score: {score}")
+            return {"messages": [response], "scores": [score]}
 
         graph_builder = StateGraph(State)
         graph_builder.add_node("chatbot", chatbot)
@@ -51,25 +63,59 @@ class ReviewChatbot:
         graph_builder.add_edge("chatbot", END)
         return graph_builder.compile()
 
+    def _calculate_response_score(self, response: str, query: str, context: str) -> float:
+        """
+        Calculate a score for the response based on how well it represents the reviews.
+        """
+        score = 0
+        try:
+            prompt = self.scoring_prompt.format(
+                context=context,
+                question=query,
+                response=response
+            )
+
+            llm_response = self.llm.invoke([("system", prompt), ("user", f"Calculate score for the above response. Dont give any explanation")])
+
+            try:
+                c = llm_response.content.strip()
+                score = float(c)
+                return round(score, 2)
+            except ValueError as e:
+                try:
+                    c = c.split()[-1]
+                    score = float(c)
+                except ValueError as e:
+                    logger.error(f"Error converting score to float: {str(e)}")
+
+        except openai.APITimeoutError as e:
+            logger.error(f"OpenAI API timeout error in scoring: {str(e)}")
+
+        except openai.APIConnectionError as e:
+            logger.error(f"OpenAI API connection error in scoring: {str(e)}")
+
+        except openai.AuthenticationError as e:
+            logger.error(f"OpenAI authentication error in scoring: {str(e)}")
+
+        except Exception as e:
+            logger.error(f"Error calculating response score: {str(e)}")
+
+        return score
+
     def _shorten_response(self, response: str, query: str) -> str:
         """
         Shorten the response context to fit within token limits while preserving the most relevant content.
         """
-        # Calculate tokens for the system description and query
         system_tokens = len(self.tokenizer.encode(self.system_desc))
         query_tokens = len(self.tokenizer.encode(query))
 
-        # Calculate available tokens for the response context
         available_tokens = self.max_tokens - system_tokens - query_tokens - self.max_response_tokens
 
-        # Split response into reviews
         reviews = response.split('\n')
 
-        # Initialize shortened response
         shortened_reviews = []
         current_tokens = 0
 
-        # Add reviews until we approach the token limit
         for review in reviews:
             review_tokens = len(self.tokenizer.encode(review))
             if current_tokens + review_tokens <= available_tokens:
@@ -84,6 +130,7 @@ class ReviewChatbot:
     def _find_contextual_response(self, query: str):
         embedding = get_embedding(query)
         response = self._query_qdrant(self.collection, embedding)
+        self._last_context = response
         if response:
             try:
                 llm_response = self._get_llm_response(response, query)
@@ -92,6 +139,7 @@ class ReviewChatbot:
                 if "maximum context length" in str(e).lower():
                     logger.warning(f"Token length exceeded, attempting to shorten response: {str(e)}")
                     shortened_response = self._shorten_response(response, query)
+                    self._last_context = shortened_response
                     try:
                         llm_response = self._get_llm_response(shortened_response, query)
                         return llm_response
@@ -161,9 +209,11 @@ class ReviewChatbot:
         for event in self.graph.stream({"messages": [("user", user_input)]}):
             for value in event.values():
                 response = value["messages"][-1]
+                score = value["scores"][-1]
 
         self.graph = self._build_graph()  # Re-build the graph to reset memory
-        return response
+        result = {"response": response, "score": score}
+        return result
 
     def run_chat(self):
         print("Chatbot initialized. Type 'quit' to exit.")
