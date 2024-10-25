@@ -146,7 +146,7 @@ The following endpoints are available in this chatbot:
 
    ```json
    {
-     "_id": 0,
+     "_id": 19206,
      "review_id": "14a011a8-7544-47b4-8480-c502af0ac26f",
      "pseudo_author_id": "152618553977019693742",
      "author_name": "A Google user",
