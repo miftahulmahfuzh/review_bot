@@ -21,6 +21,7 @@ The full dataset for this project is available on Kaggle: [3.4 Million Spotify G
 ### Install Dependencies
 
 To install project dependencies, run:
+
 ```bash
 poetry install
 ```
@@ -32,7 +33,9 @@ poetry install
 The knowledge base is powered by Qdrant as the vector database, which stores the semantic embeddings of review texts.
 
 - **Vector Database:**
+    
   [Qdrant](https://qdrant.tech/documentation/quickstart) serves as the vector database for this chatbot. To deploy Qdrant, run:
+  
   ```bash
   docker-compose -f docker-compose-qdrant.yml up
   ```
@@ -41,25 +44,36 @@ The knowledge base is powered by Qdrant as the vector database, which stores the
   We use [TinyBERT](https://huggingface.co/cross-encoder/ms-marco-TinyBERT-L-2-v2) for semantic representation of review texts. TinyBERT is served with Huggingface’s Optimum ONNX and transformed into vector representations using Transformers' `feature-extraction` pipeline.
 
   To deploy TinyBERT:
+  
   1. **Build Optimum ONNX Serving Image:**
+  
      ```bash
      cd tinybert/serving
      docker build -t optimum-onnx-serving-cpu:0.1.2 .
      ```
+     
   2. **Update `model.onnx` Path in Docker Compose Volumes**
+  
      Example:
+     
      ```yaml
      - /home/miftah/Downloads/job_application/mekari/review_bot/tinybert:/app/models
      ```
+     
   3. **Start the TinyBERT Docker Compose:**
+  
      ```bash
      docker-compose up
      ```
 
 Once Qdrant and TinyBERT are deployed successfully, load the dataset:
+
 1. Download the dataset: [SPOTIFY_REVIEWS.csv](https://drive.usercontent.google.com/download?id=1_xaRB6d2K_9-1dUmdU0GjtaqPO7uQnTM&export=download&authuser=0&confirm=t&uuid=6e16677f-518a-4234-a40b-fa2fcf5c7f72&at=AN_67v0zAA_AXLxQ-CUszJFdfeOp%3A1729829750160).
+
 2. Update `fname` in `qdrant_scripts/load_data.py` to point to the dataset path.
+
 3. Run the data loading script:
+
    ```bash
    poetry run python load_data.py
    ```
@@ -71,19 +85,25 @@ Once Qdrant and TinyBERT are deployed successfully, load the dataset:
 The chatbot uses [LangGraph](https://langchain-ai.github.io/langgraph/tutorials/introduction/) as the main library, integrating [LangChain](https://python.langchain.com/docs/introduction/) to manage AzureOpenAI and `ChatPromptTemplate` for seamless dialog flow.
 
 ### Run Chatbot Interactively
+
 To run the chatbot in terminal mode:
+
 ```bash
 ./scripts/run_rag.sh
 ```
 
 ### Deploy Chatbot API
+
 To deploy the chatbot API:
+
 ```bash
 ./scripts/run_api.sh
 ```
 
 ### Deploy Streamlit UI
-To deploy the UI (depends on the API):
+
+To deploy the UI (Chatbot API has to be deployed beforehand):
+
 ```bash
 ./scripts/run_ui.sh
 ```
