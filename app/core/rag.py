@@ -7,8 +7,8 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from qdrant_client import QdrantClient
 
-from app.config import settings
 from app.log import logger
+from app.config import settings
 from app.core.utils import get_embedding
 
 class State(TypedDict):
@@ -27,12 +27,9 @@ class ReviewChatbot:
         self.collection = settings.REVIEW_COLLECTION_NAME
         self.graph = self._build_graph()
 
+        system_desc = open(settings.SYSTEM_DESCRIPTION).read()
         self.qa_prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are a helpful AI assistant that provides summary answer based on a context in the form of a collection of spotify reviews.
-            each row represents a single review
-            If user's question does not relate to spotify's review, respond with 'this question is irrelevant to spotify reviews analysis'
-            If the collection of reviews is not relevant or doesn't contain the information needed to answer the question, respond with 'NO_ANSWER'.
-            If the collection of reviews is relevant, provide a concise answer based on it."""),
+            ("system", system_desc),
             ("human", "Reviews:\n{context}\n\nQuestion: {question}")
         ])
 

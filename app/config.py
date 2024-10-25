@@ -1,8 +1,6 @@
+from pathlib import Path
 from pydantic_settings import BaseSettings
-from pydantic import (
-    Field,
-    SecretStr,
-)
+from pydantic import SecretStr
 import os
 
 class Config(BaseSettings):
@@ -28,6 +26,8 @@ class Config(BaseSettings):
     AZURE_API_VERSION: SecretStr
     AZURE_DEPLOYMENT_NAME: SecretStr
     TEMPERATURE: float
+
+    SYSTEM_DESCRIPTION: Path = "config/system_description.txt"
 
     class Config:
         env_file = ".env"
