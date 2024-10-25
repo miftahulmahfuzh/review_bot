@@ -1,6 +1,4 @@
-import abc
 import numpy as np
-from typing import List, Dict
 from qdrant_client import QdrantClient
 from qdrant_client.grpc import ScoredPoint
 from qdrant_client.http.models import PointStruct, VectorParams
@@ -10,14 +8,7 @@ from app.schema import Knowledges, Review
 from app.core.utils import get_embedding
 from qdrant_client.http.models import Distance, PointStruct
 
-
-class DocumentDB(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def search(self, embedding, **kwargs):
-        pass
-
-
-class QDrantDB(DocumentDB):
+class QDrantDB():
     def __init__(self) -> None:
         super().__init__()
 
@@ -76,9 +67,5 @@ class QDrantDB(DocumentDB):
             )
         result = {"result": knowledges}
         return result
-
-    def is_knowledge_exist(self, knowledge_id: str):
-        knowledge_ids = [c.name for c in self.client.get_collections().collections]
-        return knowledge_id in knowledge_ids
 
 db = QDrantDB()

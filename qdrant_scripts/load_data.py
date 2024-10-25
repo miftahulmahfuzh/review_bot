@@ -14,6 +14,8 @@ df['author_app_version'] = df['author_app_version'].fillna('1.1.0.112')
 # print(df.keys())
 
 for i, row in tqdm(df.iterrows(), total=len(df)):
+    if i < 16367:
+        continue
     review_text = row["review_text"]
     _id = int(row["Unnamed: 0"])
     payload = {
