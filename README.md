@@ -132,8 +132,9 @@ The following endpoints are available in this chatbot:
 
    ```json
    {
-     "response": "Users are most likely to compare our application with Pandora."
-   }
+     "response": "Users are most likely to compare Spotify with Pandora and Google Play Music, as these platforms are frequently mentioned in the reviews.",
+     "score": 0.99
+    }
    ```
 
 2. **PUT `/review/<review_id>`**
