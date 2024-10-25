@@ -105,6 +105,22 @@ class ReviewChatbot:
                 logger.error(f"General error in finding contextual response: {str(e)}")
                 return "I encountered an error processing your query. Please try again."
 
+            except openai.APITimeoutError as e:
+                logger.error(f"OpenAI API timeout error: {str(e)}")
+                return "The request timed out. Please try again in a moment."
+
+            except openai.APIConnectionError as e:
+                logger.error(f"OpenAI API connection error: {str(e)}")
+                return "I'm having trouble connecting to the service. Please check your internet connection and try again."
+
+            except openai.AuthenticationError as e:
+                logger.error(f"OpenAI authentication error: {str(e)}")
+                return "There's an issue with the service authentication. Please contact support."
+
+            except Exception as e:
+                logger.error(f"Unexpected error in LLM processing: {str(e)}")
+                return "An unexpected error occurred. Please try again."
+
         return "I can't formulate an answer based on the context provided."
 
     def _query_qdrant(self, collection_name: str, embedding):
