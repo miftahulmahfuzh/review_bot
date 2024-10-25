@@ -40,8 +40,8 @@ def insert_review(item_id: int, payload: schema.Review):
             response_model=schema.DeleteOutput,
             dependencies=[Depends(verify_api_key)]
             )
-def delete_article(item_id: int):
-    result = climate.delete_article(item_id)
+def delete_review(item_id: int):
+    result = db.delete(item_id, settings.REVIEW_COLLECTION_NAME)
     return schema.DeleteOutput(**result)
 
 @app.get("/collections", response_model=schema.Knowledges)

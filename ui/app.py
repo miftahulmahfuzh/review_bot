@@ -10,10 +10,8 @@ st.write("Ask any question about Spotify reviews, and the chatbot will respond b
 # User input for the question
 user_input = st.text_input("Your question:", "")
 
-# Button to send the request
 if st.button("Ask"):
     if user_input:
-        # Make the POST request to FastAPI
         headers = {"content-type": "application/json", "x-api-key": "ebce2698dadf0593c979a2798c84e49a0"}
         response = requests.post(API_URL, json={"user_input": user_input}, headers=headers)
 

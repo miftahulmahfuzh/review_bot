@@ -7,7 +7,7 @@ ENDPOINT = "review"
 
 # fname = "sample.csv"
 fname = "../SPOTIFY_REVIEWS.csv"
-df = pd.read_csv(fname)[:10000] # [:5]
+df = pd.read_csv(fname)[:100000]
 df = df.dropna(subset=["review_text"])
 df['author_app_version'] = df['author_app_version'].fillna('1.1.0.112')
 # print(df)
