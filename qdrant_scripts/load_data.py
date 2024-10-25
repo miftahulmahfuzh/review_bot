@@ -5,8 +5,11 @@ from tqdm import tqdm
 BASE_URL = "http://localhost:8092"
 ENDPOINT = "review"
 
-fname = "sample.csv"
-df = pd.read_csv(fname)[:5]
+# fname = "sample.csv"
+fname = "../SPOTIFY_REVIEWS.csv"
+df = pd.read_csv(fname)[:10000] # [:5]
+df = df.dropna(subset=["review_text"])
+df['author_app_version'] = df['author_app_version'].fillna('1.1.0.112')
 # print(df)
 # print(df.keys())
 
@@ -24,9 +27,13 @@ for i, row in tqdm(df.iterrows(), total=len(df)):
         "author_app_version": row["author_app_version"],
         "review_timestamp": row["review_timestamp"]
     }
-    response = requests.put(
-        f"{BASE_URL}/{ENDPOINT}/{_id}",
-        json=payload,
-        headers={"Content-Type": "application/json", "x-api-key": "ebce2698dadf0593c979a2798c84e49a0"}
-    )
+    try:
+        response = requests.put(
+            f"{BASE_URL}/{ENDPOINT}/{_id}",
+            json=payload,
+            headers={"Content-Type": "application/json", "x-api-key": "ebce2698dadf0593c979a2798c84e49a0"}
+        )
+    except:
+        print(row)
+
 

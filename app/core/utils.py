@@ -1,4 +1,3 @@
-from typing import Tuple
 from app.log import logger
 from requests import post
 import json
@@ -8,59 +7,19 @@ import pickle
 
 from app.config import settings
 
-def predict_doc_cls(url:str, text:str) -> Tuple[str, float]:
-    data = {
-        "inputs": [text]
-    }
-    r = None
-    label = "unknown"
-    confidence = 0
-    try:
-        r = post(url, data=json.dumps(data)).json()
-        r = r["output"][0]
-        label = r["label"]
-        confidence = r["score"]
-    except Exception as e:
-        logger.error(f"FAILED DURING API CALL (predict_doc_cls). url: {url}")
-        logger.error(e)
-    return (label, confidence)
-
-def predict_doc_pair_cls(url:str, text_a:str, text_b:str) -> Tuple[str, float]:
-    data = {
-        "inputs": [{"text":text_a, "text_pair":text_b}]
-    }
-    r = None
-    label = "unknown"
-    confidence = 0
-    try:
-        r = post(url, data=json.dumps(data)).json()
-        r = r["output"][0]
-        label = r["label"]
-        confidence = r["score"]
-    except Exception as e:
-        logger.error(f"FAILED DURING API CALL (predict_doc_pair_cls). url: {url}")
-        logger.error(e)
-    return (label, confidence)
-
-def predict_doc_multi_cls(url:str, text:str) -> dict:
-    data = {
-        "inputs": [text]
-    }
-    r = {}
-    try:
-        r = post(url, data=json.dumps(data)).json()
-        r = r["output"][0]
-    except Exception as e:
-        logger.error(f"FAILED DURING API CALL (predict_doc_multi_cls). url: {url}")
-        logger.error(e)
-    return r
-
 def vector(text):
-    headers = {"content-type": "application/json"}
-    data = {"inputs": [text]}
-    r = post(settings.EMBEDDING_SERVING_URL, data=json.dumps(data), headers=headers)
-    r = r.json()["output"][0]
-    return r
+    try:
+        headers = {"content-type": "application/json"}
+        data = {"inputs": [text]}
+        r = post(settings.EMBEDDING_SERVING_URL, data=json.dumps(data), headers=headers)
+        r.raise_for_status()  # Raises an HTTPError for bad responses (4xx, 5xx)
+        return r.json()["output"][0]
+    except RequestException as e:
+        logger.error(f"Failed to connect to embedding service: {str(e)}")
+        return None
+    except (KeyError, json.JSONDecodeError) as e:
+        logger.error(f"Failed to process embedding response: {str(e)}")
+        return None
 
 def get_embedding(text: str):
     if settings.CACHE_QUERY_EMBEDDING:
