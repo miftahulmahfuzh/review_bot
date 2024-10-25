@@ -1,6 +1,12 @@
 from pydantic import BaseModel, Field
 from typing import List
 
+class AskInput(BaseModel):
+    user_input: str
+
+class AskOutput(BaseModel):
+    response: str
+
 class Review(BaseModel):
     _id: int
     review_id: str

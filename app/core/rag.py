@@ -8,6 +8,7 @@ from langgraph.graph.message import add_messages
 from qdrant_client import QdrantClient
 
 from app.config import settings
+from app.log import logger
 from app.core.utils import get_embedding
 
 class State(TypedDict):
@@ -71,7 +72,7 @@ class ReviewChatbot:
             r = result.payload
             text = r['review_text']
             reviews.append(text)
-        print(f"TOTAL REVIEWS: {len(reviews)}")
+        logger.info(f"TOTAL REVIEWS: {len(reviews)}")
         text = "\n".join(reviews)
         return text
 
@@ -91,6 +92,15 @@ class ReviewChatbot:
             for value in event.values():
                 print("Assistant:", value["messages"][-1])
 
+    def ask(self, user_input: str):
+        response = None
+        for event in self.graph.stream({"messages": [("user", user_input)]}):
+            for value in event.values():
+                response = value["messages"][-1]
+
+        self.graph = self._build_graph()  # Re-build the graph to reset memory
+        return response
+
     def run_chat(self):
         print("Chatbot initialized. Type 'quit' to exit.")
         while True:
@@ -100,6 +110,6 @@ class ReviewChatbot:
                 break
             self.stream_graph_updates(user_input)
 
-# Instantiate and run ReviewChatbot
-review_chatbot = ReviewChatbot()
-review_chatbot.run_chat()
+if __name__=="__main__":
+    review_chatbot = ReviewChatbot()
+    review_chatbot.run_chat()

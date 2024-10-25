@@ -3,7 +3,7 @@ from fastapi import FastAPI, Header, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from app import schema
 from app.config import settings
-# from app.core.review import Review
+from app.core.rag import ReviewChatbot
 from app.core.document_db import db
 
 app = FastAPI(
@@ -12,12 +12,21 @@ app = FastAPI(
     description="API for spotify review chatbot"
 )
 
-# review = Review()
+review_chatbot = ReviewChatbot()
 
-# Dependency to check x-api-key
 def verify_api_key(x_api_key: str = Header(...)):
     if x_api_key != settings.API_KEY.get_secret_value():  # Compare with the API key from settings
         raise HTTPException(status_code=403, detail="Invalid API Key")
+
+@app.post("/ask",
+          response_model=schema.AskOutput,
+          dependencies=[Depends(verify_api_key)],
+          summary="Ask the chatbot a question",
+          description="Endpoint to ask a question to the chatbot")
+def ask(payload: schema.AskInput):
+    response = review_chatbot.ask(payload.user_input)
+    result = {"response": response}
+    return schema.AskOutput(**result)
 
 @app.put("/review/{item_id}",
          response_model=schema.InsertOutput,
