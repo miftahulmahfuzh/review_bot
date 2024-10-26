@@ -44,8 +44,8 @@ df['author_app_version'] = df['author_app_version'].fillna('0')
 # print(df.keys())
 
 for _id, row in tqdm(df.iterrows(), total=len(df)):
-    # if i < 16367:
-    #     continue
+    if _id < 11236:
+        continue
     review_text = row["review_text"]
 
     # Check if review should be processed

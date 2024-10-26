@@ -177,8 +177,6 @@ class ReviewChatbot:
             query_vector=embedding,
             limit=settings.TOPN
         )
-        text = ""
-        iid = 0
         reviews = []
         for result in results:
             r = result.payload
