@@ -57,7 +57,7 @@ if ask_button:
                     API_URL,
                     json={"user_input": user_input},
                     headers=headers,
-                    timeout=30  # Add timeout to prevent hanging
+                    timeout=300  # Add timeout to prevent hanging
                 )
 
             if response.status_code == 200:
@@ -106,7 +106,7 @@ st.markdown("---")
 st.markdown(
     """
     <div style='text-align: center; color: gray; padding: 1rem;'>
-        Built with Streamlit • Powered by LangGraph and GPT4o
+        Built with Streamlit • Powered by LangGraph and GPT4
     </div>
     """,
     unsafe_allow_html=True

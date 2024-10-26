@@ -89,13 +89,13 @@ class ReviewChatbot:
                     logger.error(f"Error converting score to float: {str(e)}")
 
         except openai.APITimeoutError as e:
-            logger.error(f"OpenAI API timeout error in scoring: {str(e)}")
+            logger.error(f"OpenAI Scoring: {e.message}")
 
         except openai.APIConnectionError as e:
-            logger.error(f"OpenAI API connection error in scoring: {str(e)}")
+            logger.error(f"OpenAI Scoring: {e.message}")
 
         except openai.AuthenticationError as e:
-            logger.error(f"OpenAI authentication error in scoring: {str(e)}")
+            logger.error(f"OpenAI Scoring: {e.message}")
 
         except Exception as e:
             logger.error(f"Error calculating response score: {str(e)}")
@@ -136,8 +136,8 @@ class ReviewChatbot:
                 llm_response = self._get_llm_response(response, query)
                 return llm_response
             except openai.BadRequestError as e:
-                if "maximum context length" in str(e).lower():
-                    logger.warning(f"Token length exceeded, attempting to shorten response: {str(e)}")
+                if "string_above_max_length" in e.code:
+                    logger.warning(f"Token length exceeded, attempting to shorten response.")
                     shortened_response = self._shorten_response(response, query)
                     self._last_context = shortened_response
                     try:
@@ -147,26 +147,23 @@ class ReviewChatbot:
                         logger.error(f"Error after shortening response: {str(inner_e)}")
                         return "I encountered an error processing your query. Please try rephrasing or simplifying your question."
                 else:
-                    logger.error(f"Unexpected OpenAI error: {str(e)}")
+                    logger.error(f"OpenAI Completion: {e.message}")
                     return "I encountered an unexpected error. Please try again."
-            except Exception as e:
-                logger.error(f"General error in finding contextual response: {str(e)}")
-                return "I encountered an error processing your query. Please try again."
 
             except openai.APITimeoutError as e:
-                logger.error(f"OpenAI API timeout error: {str(e)}")
+                logger.error(f"OpenAI Completion: {e.message}")
                 return "The request timed out. Please try again in a moment."
 
             except openai.APIConnectionError as e:
-                logger.error(f"OpenAI API connection error: {str(e)}")
+                logger.error(f"OpenAI Completion: {e.message}")
                 return "I'm having trouble connecting to the service. Please check your internet connection and try again."
 
             except openai.AuthenticationError as e:
-                logger.error(f"OpenAI authentication error: {str(e)}")
+                logger.error(f"OpenAI Completion: {e.message}")
                 return "There's an issue with the service authentication. Please contact support."
 
             except Exception as e:
-                logger.error(f"Unexpected error in LLM processing: {str(e)}")
+                logger.error(f"Error during answer generation: {str(e)}")
                 return "An unexpected error occurred. Please try again."
 
         return "I can't formulate an answer based on the context provided."
