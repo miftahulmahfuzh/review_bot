@@ -181,6 +181,7 @@ class ReviewChatbot:
         for result in results:
             r = result.payload
             text = r['review_text']
+            text = " ".join(text.split())
             reviews.append(text)
         logger.info(f"TOTAL REVIEWS: {len(reviews)}")
         text = "\n".join(reviews)
