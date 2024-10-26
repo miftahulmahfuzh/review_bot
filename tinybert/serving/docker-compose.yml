@@ -3,7 +3,7 @@ services:
   doc-emb:
     image: optimum-onnx-serving-cpu:0.1.2
     volumes:
-     - /srv/nas_data2/text/miftah/giz_climate_2/bert/bert_lm_ns2_L24_S256:/app/models
+     - /home/miftah/Downloads/job_application/mekari/review_bot/tinybert:/app/models
     ports:
       - 8899:80
     environment:

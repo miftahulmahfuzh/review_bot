@@ -37,14 +37,14 @@ ENDPOINT = "review"
 
 # fname = "sample.csv"
 fname = "../SPOTIFY_REVIEWS.csv"
-df = pd.read_csv(fname)[:200000]
+df = pd.read_csv(fname)[:400000]
 df = df.dropna(subset=["review_text"])
 df['author_app_version'] = df['author_app_version'].fillna('0')
 # print(df)
 # print(df.keys())
 
 for _id, row in tqdm(df.iterrows(), total=len(df)):
-    if _id < 11236:
+    if _id < 224304:
         continue
     review_text = row["review_text"]
 
