@@ -22,10 +22,9 @@ class Config(BaseSettings):
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8092
 
-    AZURE_ENDPOINT: SecretStr
-    AZURE_API_KEY: SecretStr
-    AZURE_API_VERSION: SecretStr
-    AZURE_DEPLOYMENT_NAME: SecretStr
+    OLLAMA_HOST: str = "http://10.181.131.250"
+    OLLAMA_PORT: str = "11435"
+    OLLAMA_CHAT_MODEL: str = "llama3.1"
     TEMPERATURE: float
 
     SYSTEM_DESCRIPTION: Path = "config/system_description.txt"
