@@ -8,7 +8,6 @@ from langchain.prompts import ChatPromptTemplate
 from transformers import AutoTokenizer
 from qdrant_client import QdrantClient
 from ollama import Client
-import tiktoken
 
 from app.core.utils import get_embedding
 from app.config import settings
@@ -37,9 +36,6 @@ class ReviewChatbot:
         ])
         self._last_context = ""
 
-        self.tokenizer = tiktoken.encoding_for_model("gpt-4")  # Keep for length estimation
-        self.max_tokens = 8192
-        self.max_response_tokens = 500
         self.tokenizer = AutoTokenizer.from_pretrained("NousResearch/Meta-Llama-3-8B", trust_remote_code=True)
         self.max_tokens = 8192
         self.max_response_tokens = 500
