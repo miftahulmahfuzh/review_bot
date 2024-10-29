@@ -25,6 +25,8 @@ class Config(BaseSettings):
     OLLAMA_HOST: str = "http://10.181.131.250"
     OLLAMA_PORT: str = "11435"
     OLLAMA_CHAT_MODEL: str = "llama3.1"
+    OLLAMA_EMBEDDING_MODEL: str = "all-minilm"
+    USE_OLLAMA_EMBEDDING: bool = True
     TEMPERATURE: float
 
     SYSTEM_DESCRIPTION: Path = "config/system_description.txt"

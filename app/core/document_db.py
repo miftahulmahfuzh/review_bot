@@ -20,6 +20,9 @@ class QDrantDB():
         collection_exists = any(collection.name == collection_name for collection in collections)
 
         if not collection_exists:
+            if (settings.USE_OLLAMA_EMBEDDING and
+                settings.OLLAMA_EMBEDDING_MODEL == "all-minilm"):
+                settings.VECTOR_SIZE = 384
             self.client.recreate_collection(
                 collection_name=collection_name,
                 vectors_config=VectorParams(size=settings.VECTOR_SIZE, distance=Distance.COSINE),

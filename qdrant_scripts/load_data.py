@@ -35,8 +35,7 @@ def should_process_review(text):
 BASE_URL = "http://localhost:8092"
 ENDPOINT = "review"
 
-# fname = "sample.csv"
-fname = "../SPOTIFY_REVIEWS.csv"
+fname = "/home/miftah/Downloads/job_application/mekari/review_bot/SPOTIFY_REVIEWS.csv"
 df = pd.read_csv(fname)
 df = df.dropna(subset=["review_text"])
 df['author_app_version'] = df['author_app_version'].fillna('0')
@@ -44,8 +43,8 @@ df['author_app_version'] = df['author_app_version'].fillna('0')
 # print(df.keys())
 
 for _id, row in tqdm(df.iterrows(), total=len(df)):
-    if _id < 290879:
-        continue
+    # if _id < 290879:
+    #     continue
     review_text = row["review_text"]
 
     # Check if review should be processed

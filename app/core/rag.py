@@ -20,6 +20,7 @@ class State(TypedDict):
 class ReviewChatbot:
     def __init__(self):
         self.client = Client(host=f"{settings.OLLAMA_HOST}:{settings.OLLAMA_PORT}")
+
         self.qdrant_client = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
         self.collection = settings.REVIEW_COLLECTION_NAME
         self.graph = self._build_graph()
@@ -147,8 +148,8 @@ class ReviewChatbot:
 
     def _normalize_score(self, current_score, context):
         score = current_score
-        if score == 100:
-            score = 1
+        if 10 < score <= 100:
+            score /= 100
         elif score > 100:
             total_reviews = len(context.split("\n"))
             score /= total_reviews
